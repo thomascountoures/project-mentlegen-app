@@ -1,0 +1,17 @@
+# ignore huge node modules folder
+node_modules/
+
+# ignore jsconfig.json, this is just for VS code configurations
+jsconfig.json
+
+# hidden files
+.DS_Store
+
+# visual studio stuff
+.vscode/
+
+# other stuff
+notes.txt
+
+# passwords and secret keys do not go to interwebs lol
+config/config.json
