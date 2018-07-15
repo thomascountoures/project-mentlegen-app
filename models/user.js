@@ -6,10 +6,15 @@ const Schema = mongoose.Schema;
 
 // create userSchema
 const userSchema = new Schema({
+    _id: Schema.Types.ObjectId,
     email: String,
     password: String,
     resetPasswordToken: String,
-    resetPasswordExpires: Date
+    resetPasswordExpires: Date,
+    posts: [{
+        type: Schema.Types.ObjectId,
+        ref: "Post"
+    }]
 });
 
 // define methods for each instance of the User collection (each instance of UserModel)
