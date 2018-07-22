@@ -13,6 +13,8 @@ postRouter.use(logger);
 
 /**
  * POST /posts/create
+ * 
+ * Creates new post
  */
 postRouter.post("/create", passport.authenticate("jwt", { session: false }), function(req, res) {
     try {
@@ -46,6 +48,62 @@ postRouter.post("/create", passport.authenticate("jwt", { session: false }), fun
             }                        
         });
     } catch(e) {    
+        console.error(e.message);
+    }
+});
+
+/**
+ * GET /posts
+ * 
+ * Get all posts
+ */
+postRouter.get("/", passport.authenticate("jwt", { session: false }), function(req, res) {
+    try {
+        process.nextTick(function() {
+            // again, there will be a user property
+            // if the user was authenticated
+            // with the passport strategy
+            if(req.user) {
+                PostModel.find({}, function(err, posts) {
+                    if(err) throw err;
+                    res.status(200).json({ posts: posts });
+                });
+            } else {
+                res.status(401).json({ message: "Unauthorized access. Please login first." });
+            }
+        });
+    } catch(e) {
+        console.error(e.message);
+    }
+});
+
+/**
+ * GET /posts/:id
+ * 
+ * Get a specific post by ID
+ */
+postRouter.get("/:id", passport.authenticate("jwt", { session: false }), function(req, res) {
+    try {
+        process.nextTick(function() {
+            // again, there will be a user property
+            // if the user was authenticated
+            // with the passport strategy
+            if(req.user) {
+                PostModel.findOne({ _id: req.params.id })
+                         .populate('author') // populate author field of post object. replaces author's ._id property with the full user object
+                         .exec(function(err, post) { // finally, execute the callback for this model method
+                            if(post) {
+                                if(err) throw err;
+                                res.status(200).json({ post: post });
+                            } else {
+                                res.status(404).json({ message: "Post not found" });
+                            }
+                         });
+            } else {
+                res.status(401).json({ message: "Unauthorized access. Please login first." });
+            }
+        });
+    } catch(e) {
         console.error(e.message);
     }
 });

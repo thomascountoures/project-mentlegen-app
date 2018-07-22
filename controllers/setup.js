@@ -11,7 +11,9 @@ const configMethods = require('../config/config');
 
 // routing information
 const routesIndex = require("./routes");
+const userRoutes = require("./routes/users");
 const postRoutes = require("./routes/posts");
+
 
 module.exports = function(express, app) {
 
@@ -76,8 +78,10 @@ module.exports = function(express, app) {
 
         // define routes
         app.use("/", routesIndex); // login, signup, etc.
+        app.use("/users", userRoutes); // information about users
         app.use("/posts", postRoutes); // user create post, user delete post, etc.
 
+        // setup view engine
         app.set("view engine", "pug"); // probably going to use react, but whatever
 
     } catch (e) {
