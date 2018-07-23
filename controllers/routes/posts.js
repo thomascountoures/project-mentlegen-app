@@ -27,20 +27,30 @@ postRouter.post("/create", passport.authenticate("jwt", { session: false }), fun
             if(req.user) {
                 try {
                     var user = req.user;
+
+                    // we need to save both the user and the post.
+                    // create and save the new post in the Post Model collection.
+                    // then, push that post onto the user.posts array and save the user.
+
+                    const newPost = {
+                        _id: mongoose.Types.ObjectId(), // note: mongoose.Types is used when saving things to the database. mongoose.Schema.Types is used when doing schema stuff.
+                        title: req.body.title,
+                        postBody: req.body.postBody,
+                        author: user._id
+                    };
+                    
+                    // we need to create a post instance and save it to the database first in the Posts collection
+                    PostModel.create(newPost, function(err, post) {
+                        if(err) throw err;
+                    });
+
+                    // then, we need to save the post instance to the user
+                    user.posts.push(newPost);
+                    
+                    // then, we save the user
                     user.save(function(err) {
                         if(err) throw err;
-
-                        var post = new PostModel();
-
-                        post.title = req.body.title;
-                        post.postBody = req.body.postBody;
-                       
-                        post.author = user._id;
-
-                        post.save(function(err) {
-                            if(err) throw err;
-                            res.status(200).json({ message: "Success! Post saved." })
-                        });
+                        res.status(200).json({ message: "Success! Post saved." });                        
                     });
                 } catch(e) {
                     console.error(e.message);
@@ -57,7 +67,7 @@ postRouter.post("/create", passport.authenticate("jwt", { session: false }), fun
  * 
  * Get all posts
  */
-postRouter.get("/", passport.authenticate("jwt", { session: false }), function(req, res) {
+postRouter.get("/", passport.authenticate("jwt", { session: false }), function(req, res, next) {
     try {
         process.nextTick(function() {
             // again, there will be a user property
