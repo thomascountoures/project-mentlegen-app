@@ -1,6 +1,6 @@
 # project-mentlegen
 
-A project by Thomas Countoures. 
+A project by Thomas Countoures. Written from scratch.
 
 Technologies: 
 
